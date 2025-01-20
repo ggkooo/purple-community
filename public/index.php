@@ -1,28 +1,31 @@
 <?php
 
-use PurpleCommunity\Model\DatabaseConnection;
-use PurpleCommunity\Model\User;
+use PurpleCommunity\Controller\user\UserChangePasswordController;
+use PurpleCommunity\Controller\user\UserForgotPasswordController;
+use PurpleCommunity\Controller\user\UserLoginController;
+use PurpleCommunity\Controller\user\UserLogoutController;
+use PurpleCommunity\Controller\user\UserRegisterController;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
 $uri = $_SERVER['REQUEST_URI'];
 
-$db_connection = new DatabaseConnection();
+session_start();
+
+// FAZER VERIFICAÇÃO SE O USUÁRIO ESTÁ LOGADO
 
 if ($uri === '/') {
     echo 'Oii';
 } elseif ($uri === '/login') {
-    $user = filter_input(INPUT_POST, 'user');
-    $pswd = filter_input(INPUT_POST, 'password');
-    $auth_user = new User($db_connection->getConnection());
-    $auth_user->authUser($user, $pswd);
+    new UserLoginController();
 } elseif ($uri === '/register') {
-    $user = filter_input(INPUT_POST, 'user');
-    $email = filter_input(INPUT_POST, 'email');
-    $pswd = filter_input(INPUT_POST, 'password');
-    $confirm_pswd = filter_input(INPUT_POST, 'confirm_password');
-    $create_user = new User($db_connection->getConnection());
-    $create_user->createUser($user, $email, $pswd, $confirm_pswd);
+    new UserRegisterController();
+} elseif ($uri === '/change-password') {
+    new UserChangePasswordController();
+} elseif ($uri === '/logout') {
+    new UserLogoutController();
+} elseif ($uri === '/forgot-password') {
+    new UserForgotPasswordController();
 } else {
     header('Location: /');
 }
