@@ -4,6 +4,7 @@ namespace PurpleCommunity\Model;
 
 use JetBrains\PhpStorm\NoReturn;
 use PDO;
+use Random\RandomException;
 
 class User
 {
@@ -14,7 +15,7 @@ class User
         $this->pdo = $pdo_instance;
     }
 
-    public function encrypt(string $text_to_encrypt): string
+    private function encrypt(string $text_to_encrypt): string
     {
         $config = require __DIR__ . '/../../config.php';
 
@@ -25,7 +26,7 @@ class User
         return base64_encode($iv . $encrypted_text);
     }
 
-    public function decrypt(string $text_to_decrypt): string
+    private function decrypt(string $text_to_decrypt): string
     {
         $config = require __DIR__ . '/../../config.php';
 
@@ -38,54 +39,81 @@ class User
         return openssl_decrypt($encrypted_text, $cypher, $encryption_key, 0, $iv);
     }
 
+    private function getUsersData(): array
+    {
+        $statement = $this->pdo->prepare('SELECT * FROM users');
+        $statement->execute();
+        return $statement->fetchAll();
+    }
+
+    private function getUserPassword(string $user): array
+    {
+        $statement = $this->pdo->prepare('SELECT password FROM users WHERE user = :user');
+        $statement->bindValue(':user', $user);
+        $statement->execute();
+        return $statement->fetch(PDO::FETCH_ASSOC);
+    }
+
     #[NoReturn] public function createUser(string $user, string $email, string $pswd, string $confirm_pswd): void
     {
-        $statement = $this->pdo->prepare('SELECT * FROM users WHERE user = :user OR email = :email');
-        $statement->bindValue(':user', $user);
-        $statement->bindValue(':email', $email);
-        $statement->execute();
-        $result = $statement->fetch(PDO::FETCH_ASSOC);
-        if (!$result) {
-            if ($pswd === $confirm_pswd) {
-                $encrypted_email = $this->encrypt($email);
-                $hashed_pswd = password_hash($pswd, PASSWORD_ARGON2ID);
-                $statement = $this->pdo->prepare('INSERT INTO users (user, email, password) VALUES (:user, :email, :password)');
-                $statement->bindValue(':user', $user);
-                $statement->bindValue('email', $encrypted_email);
-                $statement->bindValue(':password', $hashed_pswd);
+        $result = $this->getUsersData();
+        for ($i = 0; $i < count($result); $i++) {
+            if ($user === $result[$i]['user']) {
+                echo 'User or email already used';
+                exit();
+            } elseif ($email === $this->decrypt($result[$i]['email'])) {
+                echo 'User or email already used';
+                exit();
+            }
+        }
 
-                if ($statement->execute()) {
-                    echo 'User successfully created!';
-                }
-            } else {
-                echo 'Passwords don\'t match. Try again.';
+        if ($pswd === $confirm_pswd) {
+            $encrypted_email = $this->encrypt($email);
+            $hashed_pswd = password_hash($pswd, PASSWORD_ARGON2ID);
+            $statement = $this->pdo->prepare(
+                'INSERT INTO users (user, email, password) VALUES (:user, :email, :password)'
+            );
+            $statement->bindValue(':user', $user);
+            $statement->bindValue('email', $encrypted_email);
+            $statement->bindValue(':password', $hashed_pswd);
+
+            if ($statement->execute()) {
+                echo 'User successfully created!';
             }
         } else {
-            echo 'User or email already used';
+            echo 'Passwords don\'t match. Try again.';
         }
     }
 
     #[NoReturn] public function authUser(string $user, string $password): void
     {
-        $statement = $this->pdo->prepare('SELECT password FROM users WHERE user = :user');
-        $statement->bindValue(':user', $user);
-        $statement->execute();
-        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        $result = $this->getUserPassword($user);
 
         if (password_verify($password, $result['password'])) {
+            setcookie('user', $user, time() + (86400 * 14), "/");
+            $user_data = $this->getUsersData();
+
+            for ($i = 0; $i < count($user_data); $i++) {
+                if ($user_data[$i]['user'] === $user) {
+                    $_SESSION['user_id'] = $user_data[$i]['id'];
+                }
+            }
+
+            $_SESSION['user'] = $user;
             echo 'Correct credentials';
         } else {
             echo 'Invalid credentials';
         }
     }
 
-    #[NoReturn] public function changePassword(string $user, string $pswd, string $new_pswd, string $confirm_new_pswd): void
-    {
+    #[NoReturn] public function changePassword(
+        string $user,
+        string $pswd,
+        string $new_pswd,
+        string $confirm_new_pswd
+    ): void {
         if ($new_pswd === $confirm_new_pswd) {
-            $statement = $this->pdo->prepare('SELECT password FROM users WHERE user = :user');
-            $statement->bindValue(':user', $user);
-            $statement->execute();
-            $result = $statement->fetch(PDO::FETCH_ASSOC);
+            $result = $this->getUserPassword($user);
 
             if (password_verify($pswd, $result['password'])) {
                 $hashed_pswd = password_hash($new_pswd, PASSWORD_ARGON2ID);
@@ -93,12 +121,42 @@ class User
                 $statement->bindValue(':new_password', $hashed_pswd);
                 $statement->bindValue(':user', $user);
                 $statement->execute();
-                // REMOVER COOKIE E REDIRECIONAR PARA A PÁGINA DE LOGIN
+                setcookie('user', '', time() - (86400 * 14), "/");
+                header('Location: /');
             } else {
                 echo 'User password incorrect';
             }
         } else {
             echo 'The passwords don\'t match. Try again.';
         }
+    }
+
+    /**
+     * @throws RandomException
+     */
+    #[NoReturn] public function forgotPassword(string $email): void
+    {
+        $result = $this->getUsersData();
+
+        for ($i = 0; $i < count($result); $i++) {
+            if ($email === $this->decrypt($result[$i]['email'])) {
+                $id = $result[$i]['id'];
+                $code = random_int(100000, 999999);
+                $statement = $this->pdo->prepare(
+                    'UPDATE users SET verification_code = :verification_code WHERE id = :id'
+                );
+                $statement->bindValue(':verification_code', $code);
+                $statement->bindValue(':id', $id);
+                $statement->execute();
+                // FAZER LÓGICA PARA ENVIAR O EMAIL
+            }
+        }
+        echo 'If this email is registered, we have sent a verification code';
+    }
+
+    #[NoReturn] public function logoutUser(): void
+    {
+        setcookie('user', '', time() - (86400 * 14), "/");
+        header('Location: /');
     }
 }
