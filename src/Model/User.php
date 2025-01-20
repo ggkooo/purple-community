@@ -40,19 +40,28 @@ class User
 
     #[NoReturn] public function createUser(string $user, string $email, string $pswd, string $confirm_pswd): void
     {
-        if ($pswd === $confirm_pswd) {
-            $encrypted_email = $this->encrypt($email);
-            $hashed_pswd = password_hash($pswd, PASSWORD_ARGON2ID);
-            $statement = $this->pdo->prepare('INSERT INTO users (user, email, password) VALUES (:user, :email, :password)');
-            $statement->bindValue(':user', $user);
-            $statement->bindValue('email', $encrypted_email);
-            $statement->bindValue(':password', $hashed_pswd);
+        $statement = $this->pdo->prepare('SELECT * FROM users WHERE user = :user OR email = :email');
+        $statement->bindValue(':user', $user);
+        $statement->bindValue(':email', $email);
+        $statement->execute();
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        if (!$result) {
+            if ($pswd === $confirm_pswd) {
+                $encrypted_email = $this->encrypt($email);
+                $hashed_pswd = password_hash($pswd, PASSWORD_ARGON2ID);
+                $statement = $this->pdo->prepare('INSERT INTO users (user, email, password) VALUES (:user, :email, :password)');
+                $statement->bindValue(':user', $user);
+                $statement->bindValue('email', $encrypted_email);
+                $statement->bindValue(':password', $hashed_pswd);
 
-            if ($statement->execute()) {
-                echo 'User successfully created!';
+                if ($statement->execute()) {
+                    echo 'User successfully created!';
+                }
+            } else {
+                echo 'Passwords don\'t match. Try again.';
             }
         } else {
-            echo 'Passwords don\'t match. Try again.';
+            echo 'User or email already used';
         }
     }
 
@@ -67,6 +76,29 @@ class User
             echo 'Correct credentials';
         } else {
             echo 'Invalid credentials';
+        }
+    }
+
+    #[NoReturn] public function changePassword(string $user, string $pswd, string $new_pswd, string $confirm_new_pswd): void
+    {
+        if ($new_pswd === $confirm_new_pswd) {
+            $statement = $this->pdo->prepare('SELECT password FROM users WHERE user = :user');
+            $statement->bindValue(':user', $user);
+            $statement->execute();
+            $result = $statement->fetch(PDO::FETCH_ASSOC);
+
+            if (password_verify($pswd, $result['password'])) {
+                $hashed_pswd = password_hash($new_pswd, PASSWORD_ARGON2ID);
+                $statement = $this->pdo->prepare('UPDATE users SET password = :new_password WHERE user = :user ');
+                $statement->bindValue(':new_password', $hashed_pswd);
+                $statement->bindValue(':user', $user);
+                $statement->execute();
+                // REMOVER COOKIE E REDIRECIONAR PARA A PÁGINA DE LOGIN
+            } else {
+                echo 'User password incorrect';
+            }
+        } else {
+            echo 'The passwords don\'t match. Try again.';
         }
     }
 }
