@@ -71,11 +71,12 @@ class User
             $encrypted_email = $this->encrypt($email);
             $hashed_pswd = password_hash($pswd, PASSWORD_ARGON2ID);
             $statement = $this->pdo->prepare(
-                'INSERT INTO users (user, email, password) VALUES (:user, :email, :password)'
+                'INSERT INTO users (user, email, password, is_admin) VALUES (:user, :email, :password, :is_admin)'
             );
             $statement->bindValue(':user', $user);
             $statement->bindValue('email', $encrypted_email);
             $statement->bindValue(':password', $hashed_pswd);
+            $statement->bindValue(':is_admin', 'n');
 
             if ($statement->execute()) {
                 header('Location: /login');
@@ -97,6 +98,7 @@ class User
                 if ($user_data[$i]['user'] === $user) {
                     $_SESSION['user_id'] = $user_data[$i]['id'];
                     $_SESSION['loggedIn'] = true;
+                    $_SESSION['isAdmin'] = $user_data[$i]['is_admin'];
                 }
             }
 
