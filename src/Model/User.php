@@ -78,10 +78,10 @@ class User
             $statement->bindValue(':password', $hashed_pswd);
 
             if ($statement->execute()) {
-                echo 'User successfully created!';
+                header('Location: /login');
             }
         } else {
-            echo 'Passwords don\'t match. Try again.';
+            header('Location: /register');
         }
     }
 
@@ -96,13 +96,14 @@ class User
             for ($i = 0; $i < count($user_data); $i++) {
                 if ($user_data[$i]['user'] === $user) {
                     $_SESSION['user_id'] = $user_data[$i]['id'];
+                    $_SESSION['loggedIn'] = true;
                 }
             }
 
             $_SESSION['user'] = $user;
-            echo 'Correct credentials';
+            header('Location: /account'); // CORRECT CREDENTIALS
         } else {
-            echo 'Invalid credentials';
+            header('Location: /login'); // INVALID CREDETIALS
         }
     }
 
@@ -157,6 +158,8 @@ class User
     #[NoReturn] public function logoutUser(): void
     {
         setcookie('user', '', time() - (86400 * 14), "/");
+        session_unset();
+        session_destroy();
         header('Location: /');
     }
 }
