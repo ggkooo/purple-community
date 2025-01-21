@@ -15,9 +15,10 @@ session_start();
 // FAZER VERIFICAÇÃO SE O USUÁRIO ESTÁ LOGADO
 
 if ($uri === '/') {
-    echo 'Oii';
+    require_once __DIR__ . '/../src/View/home-page.php';
 } elseif ($uri === '/login') {
-    new UserLoginController();
+    require_once __DIR__ . '/../src/View/login-page.php';
+//    new UserLoginController();
 } elseif ($uri === '/register') {
     new UserRegisterController();
 } elseif ($uri === '/change-password') {

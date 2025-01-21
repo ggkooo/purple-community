@@ -1,0 +1,89 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+:root {
+    --color-background-first: #171717;
+    --color-background-seccond: #1b1b1b;
+    --color-background-navbar: #131313;
+    --color-primary-light: #8e44ad;
+    --color-primary-heavy: #732d91;
+    --color-input-border: 1px solid rgba(255, 255, 255, 0.1);
+    --color-container: rgba(30, 30, 30, 0.9);
+    --color-text: #dddddd;
+
+    --font-poppins: 'Poppins';
+    --font-montserrat: 'Montserrat';
+    --font-open-sans: 'Open Sans';
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    background-color: var(--color-background-first);
+    font-family: var(--font-poppins), var(--font-montserrat), var(--font-open-sans), sans-serif;
+}
+
+.btn-purple {
+    background-color: #8e44ad;
+    color: white;
+}
+
+.btn-purple:hover {
+    background-color: #732d91;
+    color: var(--color-text);
+}
+
+.color-white {
+    color: white !important;
+}
+
+.bg-color-heavy-gray {
+    background-color: #1b1b1b !important;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--color-text) !important;
+    font-size: 1em;
+    border-radius: 11px;
+    padding: 10px 15px;
+}
+
+/* NAVBAR */
+.navbar {
+    background-color: var(--color-background-navbar);
+    transition: all 0.3s ease-in-out;
+    height: 10vh;
+}
+
+.navbar-brand, .nav-link {
+    padding-left: 25px !important;
+    font-size: 16px !important;
+    color: white !important;
+}
+
+.nav-link:hover {
+    color: var(--color-primary-light) !important;
+    text-decoration: underline;
+    text-underline-offset: 5px;
+}
+
+/* APENAS CENTRALIZAR O CONTAINER DA HOME */
+.home-content {
+    margin: 50px auto;
+    text-align: center;
+    color: var(--color-text);
+}
+
+/* LOGIN PAGE */
+.hero {
+    height: 80vh;
+}
+
+.login-container {
+    max-width: 500px;
+    margin: 50px auto;
+    padding: 60px;
+    border-radius: 8px;
+    background-color: rgba(30, 30, 30, 0.9);
+    box-shadow: 0 10px 15px -3px rgba(255, 255, 255, 0.05);
+}
+
+
