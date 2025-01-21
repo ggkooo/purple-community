@@ -14,11 +14,15 @@ class UserForgotPasswordController
      */
     #[NoReturn] public function __construct()
     {
+        require_once __DIR__ . '/../../../src/View/forgot-password-page.php';
+
         $db_connection = new DatabaseConnection();
 
-        $email = filter_input(INPUT_POST, 'email');
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $email = filter_input(INPUT_POST, 'user_email');
 
-        $forgot_pswd = new User($db_connection->getConnection());
-        $forgot_pswd->forgotPassword($email);
+            $forgot_pswd = new User($db_connection->getConnection());
+            $forgot_pswd->forgotPassword($email);
+        }
     }
 }
