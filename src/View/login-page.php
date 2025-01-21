@@ -14,7 +14,7 @@ require_once __DIR__ . '/partials/html-start.php';
             </div>
             <button type="submit" class="btn btn-purple w-100">Enter</button>
             <div class="forgot-password mt-3"><a class="color-primary" href="/forgot-password">Forgot password?</a></div>
-            <p class="color-white mt-2 mb-0">If you don't have an account, click <a class="color-primary" href="/register">here</a>.</p>
+            <p class="color-white mt-3   mb-0">If you don't have an account, click <a class="color-primary" href="/register">here</a>.</p>
         </form>
     </div>
 </div>

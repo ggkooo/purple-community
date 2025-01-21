@@ -1,6 +1,9 @@
-<footer class="text-light py-4">
+<footer class="text-light py-4 m-5">
     <div class="container text-center">
-        <h5 class="text-purple fw-bold">Purple Community</h5>
+        <div class="d-flex justify-content-center align-items-center gap-2 mb-2">
+            <img src="/assets/img/purple-community-logo-32x32.png" alt="Purple Community" class="logo" style="width: 30px; height: 30px;">
+            <h5 class="text-purple fw-bold">Purple Community</h5>
+        </div>
         <p class="small">
             Conectando pessoas e ideias. Junte-se a nós para criar um impacto positivo.
         </p>
