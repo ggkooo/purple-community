@@ -83,7 +83,9 @@ html, body {
 
 /* LOGIN PAGE */
 .hero {
-    height: 60vh;
+    height: 70vh;
+    display: flex;
+    align-items: center;
 }
 
 .hero p {
@@ -106,6 +108,7 @@ html, body {
 
 /* FOOTER */
 footer{
+    height: 15vh;
     background-color: var(--color-background-navbar);
     color: white;
     text-align: center;

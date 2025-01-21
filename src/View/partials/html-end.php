@@ -1,4 +1,4 @@
-<footer class="text-light py-4 m-5">
+<footer class="text-light py-4 mt-5 mb-5">
     <div class="container text-center">
         <div class="d-flex justify-content-center align-items-center gap-2 mb-2">
             <img src="/assets/img/purple-community-logo-32x32.png" alt="Purple Community" class="logo" style="width: 30px; height: 30px;">
