@@ -70,11 +70,12 @@ html, body {
     margin: 50px auto;
     text-align: center;
     color: var(--color-text);
+    height: 80vh;
 }
 
 /* LOGIN PAGE */
 .hero {
-    height: 80vh;
+    height: 64vh;
 }
 
 .login-container {
@@ -86,4 +87,9 @@ html, body {
     box-shadow: 0 10px 15px -3px rgba(255, 255, 255, 0.05);
 }
 
-
+footer{
+    background-color: var(--color-background-navbar);
+    color: white;
+    text-align: center;
+    padding: 10px 0;
+}
