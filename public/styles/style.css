@@ -73,6 +73,29 @@ html, body {
     text-underline-offset: 5px;
 }
 
+/* HOME PAGE */
+.carousel-caption-static {
+    z-index: 10 !important;
+    background: rgba(0, 0, 0, 0.5) !important;
+    border-radius: 0.5rem !important;
+    padding: 1rem !important;
+    max-width: 300px !important;
+    left: 5% !important;
+    top: 15% !important;
+    transform: translateY(-30%) !important;
+}
+
+.carousel:hover .carousel-caption-static {
+    opacity: 0;
+    transition: opacity 1.5s ease-in-out; /* Suaviza o desaparecimento */
+}
+
+.carousel .carousel-caption-static {
+    opacity: 1;
+    transition: opacity 0.5s ease-in-out; /* Suaviza o reaparecimento */
+}
+
+
 /* APENAS CENTRALIZAR O CONTAINER DA HOME */
 .home-content {
     margin: 50px auto;

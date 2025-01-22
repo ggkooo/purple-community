@@ -3,6 +3,10 @@ require_once __DIR__ . '/partials/html-start.php';
 ?>
 
 <div id="carousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="2000">
+    <div class="carousel-caption-static position-absolute top-50 start-0 translate-middle-y text-white px-4">
+            <h1 class="display-4 fw-bold">Os Melhores Produtos!</h1>
+            <p class="lead">Explore o Melhor da Nossa Loja.</p>
+        </div>
     <!-- Carousel Inner -->
     <div class="carousel-inner">
         <!-- Slide 1 -->
